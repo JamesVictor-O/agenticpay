@@ -1,16 +1,20 @@
 import { test, expect } from './fixtures';
 
 test.describe('Dispute resolution', () => {
+  // The disputes list page fetches /api/v1/disputes directly, so serve
+  // fixture data via route mocks to stay backend-independent.
+  test.use({ withDisputesMocks: true });
+
   test('lists disputes for authenticated merchant', async ({
     authenticatedPage: page,
   }) => {
     await page.goto('/dashboard/disputes');
 
-    await expect(page.getByRole('heading', { name: /Disputes/i })).toBeVisible({
+    await expect(page.getByRole('heading', { name: /Dispute Resolution/i })).toBeVisible({
       timeout: 30_000,
     });
 
-    // Development mode serves mock disputes
+    // Fixture disputes served by mockDisputesApi
     await expect(
       page.getByText(/service not delivered|quality issues|awaiting response/i).first()
     ).toBeVisible();

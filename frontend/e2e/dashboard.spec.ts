@@ -1,16 +1,7 @@
 import { test, expect } from './fixtures';
 
-// NOTE: `components/layout/Header.tsx` currently has unresolved merge-conflict
-// damage that prevents `app/dashboard/layout.tsx` from compiling. Until that is
-// fixed, every `/dashboard` route renders a Next.js build-error overlay instead
-// of the app shell. The tests below are written against the intended behaviour
-// and are `.skip`-guarded so the suite stays green in the meantime — flip
-// `DASHBOARD_RENDERS` to `true` (or delete the guard) once Header.tsx compiles.
-const DASHBOARD_RENDERS = false;
-const dashboardTest = DASHBOARD_RENDERS ? test : test.skip;
-
 test.describe('Dashboard access control', () => {
-  dashboardTest(
+  test(
     'unauthenticated users are redirected from /dashboard to /auth',
     async ({ page }) => {
       await page.goto('/dashboard');
@@ -23,7 +14,7 @@ test.describe('Dashboard access control', () => {
 });
 
 test.describe('Authenticated dashboard', () => {
-  dashboardTest(
+  test(
     'renders the dashboard shell and main navigation',
     async ({ authenticatedPage: page }) => {
       await page.goto('/dashboard');
@@ -39,7 +30,7 @@ test.describe('Authenticated dashboard', () => {
     },
   );
 
-  dashboardTest(
+  test(
     'highlights the active route in the sidebar',
     async ({ authenticatedPage: page }) => {
       await page.goto('/dashboard');
@@ -51,7 +42,7 @@ test.describe('Authenticated dashboard', () => {
     },
   );
 
-  dashboardTest(
+  test(
     'navigates to the Projects page',
     async ({ authenticatedPage: page }) => {
       await page.goto('/dashboard');
@@ -62,8 +53,10 @@ test.describe('Authenticated dashboard', () => {
         .click();
 
       await expect(page).toHaveURL(/\/dashboard\/projects$/);
+      // No wallet is connected in E2E, so the wallet-gated Projects page
+      // shows its connect prompt instead of project content.
       await expect(
-        page.getByRole('heading', { name: 'Projects' }),
+        page.getByRole('heading', { name: /Please connect your wallet/i }),
       ).toBeVisible();
     },
   );

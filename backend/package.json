@@ -10,6 +10,8 @@
     "lint": "eslint src/",
     "test": "vitest run --passWithNoTests",
     "test:integration": "vitest run src/tests/integration --passWithNoTests",
+    "test:contract": "vitest run src/tests/contract --passWithNoTests",
+    "load:critical": "tsx src/tests/load/critical-paths.ts",
     "test:mutation": "stryker run",
     "test:watch": "vitest --passWithNoTests",
     "tenant-isolation:scan": "tsx src/security/tenant-isolation/scan.ts",
