@@ -55,6 +55,8 @@ import { poolMonitorRouter } from './routes/pool-monitor.js';
 import { legacyRouter } from './routes/legacy.js';
 import { splitsRouter } from './routes/splits.js';
 import { refundsRouter } from './routes/refunds.js';
+import { databaseRouter } from './routes/database.js';
+import { getPrismaReplicaClient } from './db/PrismaReplicaClient.js';
 
 dotenv.config();
 
@@ -296,6 +298,8 @@ apiV1Router.use('/payment-strategies', paymentStrategiesRouter);
 apiV1Router.use('/exports', streamingExportRouter);
 // Performance and pool monitoring
 apiV1Router.use('/monitoring', poolMonitorRouter);
+// Database monitoring + read-replica management — Issue #881
+apiV1Router.use('/database', databaseRouter);
 
 // Explicit URL-based mounting
 app.use('/api/v1', apiV1Router);
@@ -325,6 +329,10 @@ app.use(errorHandler);
 if (config.jobs.enabled) {
   startJobs();
 }
+
+// Start read-replica health-check polling (Issue #881).
+// Only activates when DB_READ_REPLICA_URLS is set; no-op otherwise.
+getPrismaReplicaClient().startHealthChecks();
 
 registerDefaultProcessors();
 if (config.queue.enabled) {
@@ -359,6 +367,13 @@ const shutdown = (signal: string) => {
       console.log('Message queue stopped.');
     } catch (err) {
       console.error('Error stopping message queue:', err);
+    }
+
+    try {
+      getPrismaReplicaClient().stopHealthChecks();
+      console.log('Replica health checks stopped.');
+    } catch (err) {
+      console.error('Error stopping replica health checks:', err);
     }
 
     console.log('Graceful shutdown complete. Exiting.');
