@@ -300,7 +300,6 @@ apiV1Router.use('/payment-strategies', paymentStrategiesRouter);
 apiV1Router.use('/exports', streamingExportRouter);
 // Performance and pool monitoring
 apiV1Router.use('/monitoring', poolMonitorRouter);
-// Database monitoring + read-replica management — Issue #881
 apiV1Router.use('/database', databaseRouter);
 // Soft delete archival sweep + restore — Issue #884
 apiV1Router.use('/archive', archiveRouter);
