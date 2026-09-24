@@ -58,6 +58,8 @@ import { refundsRouter } from './routes/refunds.js';
 import { databaseRouter } from './routes/database.js';
 import { archiveRouter } from './routes/archive.js';
 import { searchRouter } from './routes/search.js';
+import { zapierRouter } from './routes/zapier.js';
+import { intercomRouter } from './routes/intercom.js';
 import { getPrismaReplicaClient } from './db/PrismaReplicaClient.js';
 import { cohortAnalyticsRouter } from './routes/cohort-analytics.js';
 import { churnPredictionRouter } from './routes/churn-prediction.js';
