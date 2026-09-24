@@ -84,12 +84,11 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefer-offline
 
-      - name: Peak load on health endpoint
-        run: |
-          npx tsx src/tests/benchmarks/serve.ts &
-          SERVER_PID=$!
-          sleep 2
-          npx autocannon -c 50 -d 15 -p 5 http://127.0.0.1:3099/health
-          kill $SERVER_PID || true
+      - name: Critical-path load test
+        run: npm run load:critical
         env:
           OPENAI_API_KEY: sk-ci-benchmark-placeholder
+          LOAD_CONNECTIONS: 50
+          LOAD_DURATION_SEC: 15
+          LOAD_P99_BUDGET_MS: 500
+          LOAD_MAX_ERROR_RATE: 0
